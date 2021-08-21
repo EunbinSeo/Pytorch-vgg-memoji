@@ -18,6 +18,6 @@ outFolder="out"
 
 torch.manual_seed(42)
 
-net = models.load_state_dict(torch.load('./torch_model/VGG_FACE.t7'))
+net = models.load_state_dict(torch.load('./models/vggface.pth'))
 net.eval()
 

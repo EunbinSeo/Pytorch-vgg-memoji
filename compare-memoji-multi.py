@@ -36,13 +36,11 @@ print("Comparing reference files: ", refsFolder+refsPattern, "with targets: ", t
 
 refs = []
 files_ = files.scandir(refsFolder, refsPattern)
-#print("----------------",files_)
 
 for i, file_ in enumerate(files_):
     refImg = util.process(cv2.imread(refsFolder+"/"+file_))
     refImg = torch.from_numpy(refImg)
     refImg = refImg.unsqueeze(0)
-    #print(net)
     net.fc.fc8.register_forward_hook(get_activation('fc8'))
     net.forward(refImg.float())
     output =  activation['fc8']
@@ -60,7 +58,7 @@ for i in range(3):
     print(files_[min_or_max[i]])
     print("i: ", i, "maxval: ", results[maxids[i]], "file: ", files_[maxids[i]]) 
     img = cv2.imread(targetsFolder+"/"+files_[maxids[i]])
-    legend = "result" + str(results[maxids[i]].item()) #"l: %i, #: %i, val: %0.3f", selectedLayer, i, results[maxids[i]])
+    legend = "result" + str(results[maxids[i]].item())
     cv2.imshow(legend, img)
     k = cv2.waitKey(0)
     if k == 27: # esc key

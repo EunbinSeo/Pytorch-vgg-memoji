@@ -11,8 +11,8 @@ def compareTensors(refs, target, targetName):
     
     for i in range(len(refs)):
         ref = refs[i]
-        dotself = torch.matmul(ref , ref.T)
-        sum_ = sum_ + torch.matmul(ref, target.T) / dotself
+        dotself = torch.tensordot(ref , ref, dims=2)
+        sum_ = sum_ + torch.tensordot(ref, target, dims=2) / dotself
 
         '''
         Trying straight up distance.  Note: need to reverse sort max/min.
@@ -31,9 +31,9 @@ def compareFile(selectedLayer, refs, targetsFolder, fileName, net):
     #net.forward(img)
     img = torch.from_numpy(img)
     img = img.unsqueeze(0)
-    net.fc3.register_forward_hook(get_activation('fc3'))
+    net.fc.fc8.register_forward_hook(get_activation('fc8'))
     output = net(img.float())
-    output =  activation['fc3']
+    output =  activation['fc8']
     return compareTensors(refs, output, fileName)
 
 activation = {}
