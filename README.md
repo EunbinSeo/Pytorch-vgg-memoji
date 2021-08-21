@@ -1,6 +1,6 @@
 # Generation_memoji
 
-I converted this lua code (https://github.com/patniemeyer/vgg-memoji) to pytorch code.
+I converted this lua code (https://github.com/patniemeyer/vgg-memoji) to python code.
 I used weight converter and the VGG face model of this github (https://github.com/chi0tzp/PyVGGFace).
 
 ## Explanation
