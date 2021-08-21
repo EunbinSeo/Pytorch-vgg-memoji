@@ -4,13 +4,12 @@ import torchvision.models as models
 import cv2
 from functools import partial
 
-from vggface import VggFace
-
 import util
 import files
 import compare
 import pickle
 
+from lib import VGGFace
 activation = {}
 
 def get_activation(name):
@@ -22,28 +21,31 @@ def get_activation(name):
 targetsFolder = "./pics/memoji"
 targetsPattern = ".png"
 
-refsFolder = "./pics/trump"
-refsPattern = ".jpg"
-net = VggFace()
+refsFolder = "./pics/ive"
+refsPattern = ".png"
 
-net.load_state_dict(torch.load("./torch_model/vggface-9d491dd7c30312.pth"))
+net = VGGFace()
+
+model_dict = torch.load('models/vggface.pth', map_location=lambda storage, loc: storage)
+net.load_state_dict(model_dict)
 
 net.eval()
 
 selectedLayer = 38
-print("Comparing reference files: ", refsFolder, refsPattern, "with targets: ", targetsFolder)
+print("Comparing reference files: ", refsFolder+refsPattern, "with targets: ", targetsFolder)
 
 refs = []
 files_ = files.scandir(refsFolder, refsPattern)
+#print("----------------",files_)
 
 for i, file_ in enumerate(files_):
     refImg = util.process(cv2.imread(refsFolder+"/"+file_))
     refImg = torch.from_numpy(refImg)
     refImg = refImg.unsqueeze(0)
-    
-    net.fc3.register_forward_hook(get_activation('fc3'))
+    #print(net)
+    net.fc.fc8.register_forward_hook(get_activation('fc8'))
     net.forward(refImg.float())
-    output =  activation['fc3']
+    output =  activation['fc8']
     refs.append(output)
 
 results = []
@@ -52,9 +54,10 @@ for i, file_ in enumerate(files_):
     results.append(compare.compareFile(selectedLayer, refs, targetsFolder, file_,net))
 
 maxids = util.indexsortTable(results)
-print(maxids)
-print(files_)
+min_or_max = maxids[-3:]
+
 for i in range(3):
+    print(files_[min_or_max[i]])
     print("i: ", i, "maxval: ", results[maxids[i]], "file: ", files_[maxids[i]]) 
     img = cv2.imread(targetsFolder+"/"+files_[maxids[i]])
     legend = "result" + str(results[maxids[i]].item()) #"l: %i, #: %i, val: %0.3f", selectedLayer, i, results[maxids[i]])
