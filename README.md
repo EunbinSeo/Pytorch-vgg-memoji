@@ -24,3 +24,6 @@ I found Jonathan Ive's the most similar memoji.
 </p>
 
 Enjoy!
+
+## TO DO
+How can we make memoji, not select in images pool?
